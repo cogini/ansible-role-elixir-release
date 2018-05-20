@@ -19,14 +19,14 @@ galaxy_info:
   platforms:
   - name: EL
     versions:
-    - 7
+    - "7"
   - name: Debian
     versions:
-    - 9
+    - "stretch" # 9
   - name: Ubuntu
     versions:
-    - 16
-    - 18
+    - "xenial" # 16.04
+    - "bionic" # 18.04
 
   galaxy_tags:
     - elixir
