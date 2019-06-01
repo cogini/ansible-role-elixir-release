@@ -4,6 +4,7 @@
 Description={{ elixir_release_name }} server
 After=local-fs.target network.target
 
+# https://www.freedesktop.org/software/systemd/man/systemd.exec.html
 [Service]
 Type=simple
 User={{ elixir_release_app_user }}
