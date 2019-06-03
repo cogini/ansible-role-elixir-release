@@ -8,7 +8,7 @@ elixir_release_app_name: mix_deploy_example
 elixir_release_service_name: "{{ elixir_release_app_name | replace('_', '-') }}"
 
 # Elixir application name
-elixir_release_app_module: "{{ name_module.split('_') | capitalize | join('') }}"
+elixir_release_app_module: "{{ elixir_release_service_name.split('_') | capitalize | join('') }}"
 
 # Version of the app in the release
 # If not specified, will read from file
