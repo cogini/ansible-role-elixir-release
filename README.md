@@ -5,12 +5,11 @@ It uses Erlang "releases" with systemd for process supervision.
 
 ## Directory structure
 
-It uses a structure like Capistrano to manage the release files.
-The base directory is named for the app, e.g. `/srv/foo`.
-Under that, it creates a `releases` directory.
-When deploying a release, it creates a directory under `releases` named
-by a timestamp, e.g. `/srv/foo/releases/20190603T072116`.
-It then makes a `/srv/foo/current` to the new directory and restarts the app.
+It uses a structure like Capistrano to manage the release files.  The base
+directory is named for the app, e.g. `/srv/foo`.  Under that, it creates a
+`releases` directory.  When deploying a release, it creates a directory under
+`releases` named by a timestamp, e.g. `/srv/foo/releases/20190603T072116`.  It
+then makes a `/srv/foo/current` to the new directory and restarts the app.
 
 ## Restarting
 
@@ -71,7 +70,7 @@ App environment
 
 HTTP listen port. This is the port that Phoenix listens on.
 
-    elixir_release_http_listen_port: 4001
+    elixir_release_http_listen_port: 4000
 
 OS user that deploys / owns the release files
 
