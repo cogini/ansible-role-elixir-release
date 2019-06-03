@@ -42,7 +42,7 @@
     - name: Enable restart path
       service: name=restart-{{ elixir_release_service_name }}.path enabled=yes
 
-    when: "elixir_release_restart_method == 'systemd_flag'"
+    when: elixir_release_restart_method == 'systemd_flag'
 
   - name: Enable service
     service: name={{ elixir_release_service_name }} enabled=yes
@@ -56,9 +56,9 @@
       owner: root
       group: root
       mode: 0600
-    when: "elixir_release_restart_method == 'systemctl'"
+    when: elixir_release_restart_method == 'systemctl'
 
-  when: "elixir_release_systemd_source == 'self'"
+  when: elixir_release_systemd_source == 'self'
 
 - block:
 
@@ -82,4 +82,4 @@
     with_fileglob:
       - "{{ elixir_release_build_dir }}systemd/var/lib/systemd/*"
 
-  when: "elixir_release_systemd_source == 'mix_systemd'"
+  when: elixir_release_systemd_source == 'mix_systemd'
