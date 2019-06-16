@@ -30,15 +30,11 @@ Better is if we didn't require sudo permissions at all. One option is to take
 advantage of the supervision provided by systemd to restart the app.
 
 When we deploy a new release, the deploy user uploads the new code, sets up the
-symlink, then tells the app to shutdown by touching a flag file on the disk or
-pinging a special URL. The app does a clean shutdown, systemd notices and
-starts it with the new code.
-
-The [shutdown_flag library](https://github.com/cogini/shutdown_flag) handles this
-for flag files.
+symlink, then tells the app to restart by touching a flag file on the disk.
+Systemd notices and restarts it with the new code.
 
 See https://www.cogini.com/blog/best-practices-for-deploying-elixir-apps/ for background.
-and https://github.com/cogini/elixir-deploy-template for a full example.
+and https://github.com/cogini/mix-deploy-example for a full example.
 
 # Requirements
 
@@ -46,106 +42,155 @@ None
 
 # Role Variables
 
-A unique prefix for our directories. This could be your organization or the
-overall project.
+Erlang name of the application, used to by Distillery to name directories
+and scripts.
 
-    elixir_release_org: myorg
+    elixir_release_app_name: my_app
 
-The external name of the app, used to name directories and the systemd unit.
+External name of the app, used to name the systemd service and directories:
 
-    elixir_release_name: foo
+    elixir_release_service_name: "{{ elixir_release_app_name | replace('_', '-') }}"
 
-The internal "Elixir" name of the app, used to by Distillery to name
-directories and scripts.
+Elixir application name, normally the CamelCase version of the app name:
 
-    elixir_release_name_code: "{{ elixir_release_name }}"
+    elixir_release_app_module: "{{ elixir_release_service_name.title().replace('_', '') }}"
 
-Version of the app in the release. Default is to read from the release.
+Version of the app in the release. If not specified, will read it from a file
+in the release.
 
     elixir_release_version: "0.1.0"
 
-App environment
-
-    elixir_release_mix_env: prod
-
-HTTP listen port. This is the port that Phoenix listens on.
-
-    elixir_release_http_listen_port: 4000
-
-OS user that deploys / owns the release files
+OS account that deploys and owns the release files:
 
     elixir_release_deploy_user: deploy
 
-OS group that deploys / owns the release files
+OS group that deploys and owns the release files:
 
     elixir_release_deploy_group: "{{ elixir_release_deploy_user }}"
 
-OS user that the app runs under
+OS account that the app runs under:
 
-    elixir_release_app_user: "{{ elixir_release_name }}"
+    elixir_release_app_user: "{{ elixir_release_service_name }}"
 
-OS group that the app runs under
+OS group that the app runs under:
 
     elixir_release_app_group: "{{ elixir_release_app_user }}"
 
-Base directory for deploy files
+App release environment, i.e. the setting of `MIX_ENV`:
 
-    elixir_release_deploy_dir: /opt/{{ elixir_release_org }}/{{ elixir_release_name }}
+    elixir_release_mix_env: prod
+
+Port that the app listens for HTTP connections on:
+
+    elixir_release_http_listen_port: 4000
+
+Port that the app listens for HTTPS connections on:
+
+    elixir_release_https_listen_port: 4001
+
+Directory prefix for release files:
+
+    elixir_release_base_dir: /srv
+
+Base directory for deploy files:
+
+    elixir_release_deploy_dir: "{{ elixir_release_base_dir }}/{{ elixir_release_service_name }}"
+
+Directories under deploy dir.
+
+Where release tarballs are unpacked:
+
     elixir_release_releases_dir: "{{ elixir_release_deploy_dir }}/releases"
 
-Location for app temp files
+Currently running release (symlink):
 
-    elixir_release_temp_dir: /var/tmp/{{ elixir_release_org }}/{{ elixir_release_name }}
+    elixir_release_current_dir: "{{ elixir_release_deploy_dir }}/current"
 
-# Optional
+Location of deploy scripts:
 
-These dirs are only created if they are defined.
+    elixir_release_scripts_dir: "{{ elixir_release_deploy_dir }}/bin"
 
-Location of per-machine config files
+Flag file dir, used to signal restart:
 
-    elixir_release_conf_dir: /etc/{{ elixir_release_name }}
+    elixir_release_flags_dir: "{{ elixir_release_deploy_dir }}/flags"
 
-Location of runtime scripts, e.g. used in cron jobs
+Directories where the app keeps its files, following [systemd](https://www.freedesktop.org/software/systemd/man/systemd.exec.html).
 
-    elixir_release_scripts_dir: "{{ elixir_release_deploy_dir }}/scripts"
+    elixir_release_app_dirs:
+      - configuration
+      - runtime
+      # - logs
+      # - tmp
+      # - state
+      # - cache
 
-Location of runtime logs
+Whether to use [conform](https://github.com/bitwalker/conform):
 
-    elixir_release_log_dir: /var/log/{{ elixir_release_name }}
+    elixir_release_conform: false
+    elixir_release_conform_conf_path: "{{ elixir_release_configuration_dir }}/config.conform"
 
-Base directory for app data
-
-    elixir_release_var_dir: /var/{{ elixir_release_org }}/{{ elixir_release_name }}
-
-Location of app data files
-
-    elixir_release_data_dir: "{{ elixir_release_var_dir }}/data"
-
-Path to conform conf file
-
-    elixir_release_conform_conf_path: "{{ elixir_release_conf_dir }}/{{ elixir_release_name_code }}.conf"
-
-Location of flag dir
-
-    elixir_release_shutdown_flag_dir: "/var/tmp/{{ elixir_release_deploy_user }}/{{ elixir_release_name }}"
-    elixir_release_shutdown_flag_file: "{{ app_shutdown_flag_dir }}/shutdown.flag"
-
-How to restart after deploying.
+How we should restart the app:
 
     elixir_release_restart_method: systemctl
-or
+    # elixir_release_restart_method: systemd_flag
+    # elixir_release_restart_method: touch
 
-    elixir_release_restart_method: touch
+Options are:
 
-# Defaults
+* `systemctl`, which runs `systemctl restart foo`
+* `systemd_flag`, which touches a file in `{{ elixir_release_shutdown_flags_dir }}/restart.flag`
 
-Open file limits
+
+Following are some options used when generating the systemd unit file. Generally speaking,
+you are probably better off using [mix_systemd](https://hex.pm/packages/mix_systemd).
+
+Open file limit:
 
     elixir_release_limit_nofile: 65536
 
-Seconds to wait between restarts
+Seconds to wait between restarts:
 
     elixir_release_systemd_restart_sec: 5
+
+`LANG` environment var: 
+
+    elixir_release_lang: "en_US.UTF-8"
+
+umask:
+
+    elixir_release_umask: "0027"
+
+Target systemd version, used to enable more advanced features:
+
+    elixir_release_systemd_version: 219
+
+Source of systemd unit file:
+
+    elixir_release_systemd_source: mix_systemd # copy files generated by mix_systemd in _build dir
+    # elixir_release_systemd_source: self # generate using this role templates
+    # elixir_release_scripts_source: self # generate using this role templates
+    # elixir_release_scripts_source: mix_systemd # copy files generated by mix_systemd in _build dir
+    elixir_release_scripts_source: bin # copy files generated by mix_deploy in bin dir
+
+Systemd service type:
+
+    elixir_release_service_type: simple
+
+Start command:
+
+    elixir_release_start_command: foreground
+
+PID file when using forking service type:
+
+    elixir_release_pid_file: "{{ elixir_release_runtime_dir }}/{{ elixir_release_app_name}}.pid"
+
+List of ExecStartPre scripts in systemd unit file:
+
+    elixir_release_exec_start_pre: []
+
+List of environment vars to set in systemd unit file:
+
+    elixir_release_env_vars: []
 
 # Dependencies
 
