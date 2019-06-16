@@ -78,7 +78,9 @@
       - "{{ elixir_release_build_dir }}systemd/var/lib/systemd/*"
 
   - name: Enable systemd unit files from release
-    service: name={{ item | basename}} enabled=yes
+    service:
+      name: "{{ item | basename }}"
+      enabled: yes
     with_fileglob:
       - "{{ elixir_release_build_dir }}systemd/var/lib/systemd/*"
 
