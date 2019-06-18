@@ -56,6 +56,7 @@
 
   when: not ansible_check_mode
 
+# Because we may have special sudo config in /etc/sudoers.d, we call systemctl manually instead of using the Ansible function
 - name: Restart app using systemctl
   command: sudo /bin/systemctl restart "{{ elixir_release_service_name}}"
   when: "elixir_release_restart_method == 'systemctl'"
