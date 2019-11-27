@@ -12,11 +12,10 @@ It uses a structure like Capistrano to manage the release files. The base
 directory is named for the app, e.g. `/srv/foo`, with a `releases` directory
 under it.  When the role deploys a release, it creates a directory named by a
 timestamp, e.g. `/srv/foo/releases/20190603T072116`.  It unpacks the files
-under it, makes a symlink from `/srv/foo/current` to the new directory.
+under it, makes a symlink from `/srv/foo/current` to the new directory, then
+restarts it.
 
 ## Restarting
-
-After deploying the release, it restarts the app to make it live.
 
 By default, when `elixir_release_restart_method: systemctl`, it does this by running:
 
@@ -33,9 +32,9 @@ sudo config file specifies what commands it can run, e.g. `/etc/sudoers.d/deploy
 Better is if we didn't require sudo permissions at all. One option is to take
 advantage of systemd to restart the app.
 
-Set `elixir_release_restart_method: systemd_flag`, the deploy process touches a
-`/srv/foo/flags/restart.flag` file on the disk after deploying the code.
-Systemd notices and restarts it with the new code.
+Set `elixir_release_restart_method: systemd_flag`, and the deploy process
+touches a on the disk after deploying the code (`/srv/foo/flags/restart.flag`).
+Systemd notices and restarts the app.
 
 See [mix-deploy-example](https://github.com/cogini/mix-deploy-example) for a full example.
 
