@@ -12,10 +12,11 @@ It uses a structure like Capistrano to manage the release files. The base
 directory is named for the app, e.g. `/srv/foo`, with a `releases` directory
 under it.  When the role deploys a release, it creates a directory named by a
 timestamp, e.g. `/srv/foo/releases/20190603T072116`.  It unpacks the files
-under it, makes a symlink from `/srv/foo/current` to the new directory, then
-restarts it.
+under it, makes a symlink from `/srv/foo/current` to the new directory.
 
 ## Restarting
+
+After deploying the release, it restarts the app to make it live.
 
 By default, when `elixir_release_restart_method: systemctl`, it does this by running:
 
@@ -32,17 +33,72 @@ sudo config file specifies what commands it can run, e.g. `/etc/sudoers.d/deploy
 Better is if we didn't require sudo permissions at all. One option is to take
 advantage of systemd to restart the app.
 
-Set `elixir_release_restart_method: systemd_flag`, and the deploy process
-touches a on the disk after deploying the code (`/srv/foo/flags/restart.flag`).
-Systemd notices and restarts the app.
+Set `elixir_release_restart_method: systemd_flag`, the deploy process touches a
+`/srv/foo/flags/restart.flag` file on the disk after deploying the code.
+Systemd notices and restarts it with the new code.
 
 See [mix-deploy-example](https://github.com/cogini/mix-deploy-example) for a full example.
 
-# Requirements
+# Example Playbook
 
-None
+A minimal playbook, for an app called `foo`:
+
+    - hosts: '*'
+      become: true
+      vars:
+        elixir_release_app_name: foo
+      roles:
+        - cogini.elixir-release
+
+Put this in `ansible/playbooks/deploy-app.yml`.
+
+First, set up the target machine, e.g. installing packages and creating directories.
+Run this from your dev machine, specifying a user with sudo permissions:
+
+    ansible-playbook -u $USER -v -l web-servers playbooks/deploy-app.yml --skip-tags deploy -D
+
+Next, deploy the code. Run this from the build server, from a user account with
+ssh access to the deploy account on the target machine:
+
+    ansible-playbook -u deploy -v -l web-servers playbooks/deploy-app.yml --tags deploy --extra-vars ansible_become=false -D
+
+A more heaviliy customized playbook:
+
+    - hosts: '*'
+      become: true
+      vars:
+        elixir_release_app_name: foo
+        elixir_release_app_user: bar
+        elixir_release_deploy_user: deploy
+        elixir_release_mix_env: public
+        elixir_release_base_dir: /opt/bar
+        elixir_release_app_dirs:
+          - configuration
+          - runtime
+          - logs
+          - tmp
+          - state
+          - cache
+        elixir_release_tmp_directory_base: /var/tmp/bar
+        elixir_release_state_directory_base: /var/bar
+        elixir_release_http_listen_port: 8080
+        elixir_release_cache_directory_mode: 0700
+        elixir_release_configuration_directory_mode: 0755
+        elixir_release_logs_directory_mode: 0755
+        elixir_release_state_directory_mode: 0755
+        elixir_release_tmp_directory_mode: 0755
+        elixir_release_sudoers_file: "{{ elixir_release_app_user }}-{{ elixir_release_service_name }}"
+        # Location of source app, assuming that the deploy scripts are in a separate repo in a parallel dir
+        elixir_release_src_dir: "{{ playbook_dir }}/../../../foo"
+      roles:
+        - cogini.elixir-release
 
 # Role Variables
+
+Location of app to get release files. By default, it assumes that you have an `ansible` directory
+in your app source
+
+    elixir_release_app_dir: "{{ role_path }}/../../.."
 
 Erlang name of the application, used to by Distillery to name directories
 and scripts.
@@ -90,7 +146,6 @@ OS group that the app runs under:
 App release environment, i.e. the setting of `MIX_ENV`, used to find the release file under the `_build` dir:
 
     elixir_release_mix_env: prod
-
 
 Directory prefix for release files:
 
@@ -225,22 +280,9 @@ List of environment vars to set in systemd unit file:
 
 None
 
-# Example Playbook
+# Requirements
 
-    - hosts: '*'
-      become: true
-      roles:
-        - cogini.elixir-release
-
-Run setup tasks, e.g. installing packages and creating directories.
-Run this from your dev machine, specifying a user with sudo permissions.
-
-    ansible-playbook -u $USER -v -l web-servers playbooks/deploy-app.yml --skip-tags deploy -D
-
-Deploy the code. Run this from the build server, from a user account with ssh
-access to the deploy account on the target machine.
-
-    ansible-playbook -u deploy -v -l web-servers playbooks/deploy-app.yml --tags deploy --extra-vars ansible_become=false -D
+None
 
 # License
 
