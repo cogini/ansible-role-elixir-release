@@ -51,7 +51,7 @@
       cmd: mv "{{ elixir_release_current_dir }}" "{{ elixir_release_current_dir }}.old"
       creates: "{{ elixir_release_current_dir }}.old"
       removes: "{{ elixir_release_current_dir }}"
-    when: current.stat.islnk is defined and current.stat.islnk == False
+    when: current.stat.islnk is defined and current.stat.islnk
 
   - name: Create current symlink
     file: src={{ elixir_release_releases_dir }}/{{ elixir_release_timestamp }} dest={{ elixir_release_current_dir }} state=link
@@ -70,7 +70,7 @@
 
 # Because we may have special sudo config in /etc/sudoers.d, we call systemctl manually instead of using the Ansible function
 - name: Restart app using systemctl
-  command: sudo /bin/systemctl restart "{{ elixir_release_service_name}}"
+  command: sudo /bin/systemctl restart "{{ elixir_release_service_name }}"
   when: "elixir_release_restart_method == 'systemctl'"
   # when: "ansible_service_mgr == 'systemd' or (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7')"
 
