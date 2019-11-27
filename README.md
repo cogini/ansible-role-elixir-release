@@ -201,6 +201,12 @@ Options are:
 * `touch`, which touches the file `{{ elixir_release_shutdown_flags_dir }}/restart.flag`.
   Directory permissions are 0770, allowing the managed process to restart itself.
 
+Which users are allowed to restart the app using `sudo /bin/systemctl restart` when method == `systemctl`.
+
+  elixir_release_restart_users:
+   - "{{ elixir_release_deploy_user }}"
+
+Set to `[]` and nobody can restart, or add additional names, e.g. `- "{{ elixir_release_app_user }}"`.
 
 ## systemd and scripts
 
@@ -224,7 +230,6 @@ this role will generate a systemd unit file from a template.
 With the default value of `bin`, the role copies scripts from the project's `bin` directory
 to `/srv/foo/bin` on the target system. Set it to `mix_deploy` if you have set
 `output_dir_per_env: true` in the `mix_deploy` config, storing the generated scripts under `_build`.
-
 
 The following variables are used when generating the systemd unit file:
 

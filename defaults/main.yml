@@ -100,6 +100,9 @@ elixir_release_restart_method: systemctl
 # elixir_release_restart_method: systemd_flag
 # elixir_release_restart_method: touch
 
+elixir_release_restart_users:
+  - "{{ elixir_release_deploy_user }}"
+
 # Name of sudoers config file
 elixir_release_sudoers_file: "{{ elixir_release_deploy_user }}-{{ elixir_release_service_name }}"
 
