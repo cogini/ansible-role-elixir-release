@@ -55,12 +55,12 @@ Put this in `ansible/playbooks/deploy-app.yml`.
 First, set up the target machine, e.g. installing packages and creating directories.
 Run this from your dev machine, specifying a user with sudo permissions:
 
-    ansible-playbook -u $USER -v -l web-servers playbooks/deploy-app.yml --skip-tags deploy -D
+    ansible-playbook -u $USER -v -l web_servers playbooks/deploy-app.yml --skip-tags deploy -D
 
 Next, deploy the code. Run this from the build server, from a user account with
 ssh access to the deploy account on the target machine:
 
-    ansible-playbook -u deploy -v -l web-servers playbooks/deploy-app.yml --tags deploy --extra-vars ansible_become=false -D
+    ansible-playbook -u deploy -v -l web_servers playbooks/deploy-app.yml --tags deploy --extra-vars ansible_become=false -D
 
 A more heaviliy customized playbook:
 
