@@ -22,7 +22,7 @@ Environment=RELEASE_MUTABLE_DIR={{ elixir_release_runtime_dir }}
 {% elif elixir_release_release_system  == 'mix' %}
 Environment=RELEASE_TMP={{ elixir_release_runtime_dir }}
 {% endif %}
-Environment=PORT={{ elixir_release_http_listen_port }}
+# Environment=PORT={{ elixir_release_http_listen_port }}
 {% if elixir_release_conform %}
 Environment=CONFORM_CONF_PATH={{ elixir_release_conform_conf_path }}
 {% endif %}
