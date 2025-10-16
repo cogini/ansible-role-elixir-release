@@ -161,6 +161,18 @@ App release environment, i.e. the setting of `MIX_ENV`, used to find the release
 
     elixir_release_mix_env: prod
 
+Location of source build files:
+
+    elixir_release_build_dir: "{{ elixir_release_src_dir }}/_build/{{ elixir_release_mix_env }}"
+
+Location of source release files:
+
+    elixir_release_src_releases_dir: "{{ elixir_release_build_dir }}/rel/{{ elixir_release_release_name }}/releases"
+
+Location of source systemd files:
+
+    elixir_release_src_systemd_dir: "{{ elixir_release_build_dir }}/systemd/lib/systemd/system"
+
 Directory prefix for release files:
 
     elixir_release_base_dir: /srv
