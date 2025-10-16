@@ -105,7 +105,7 @@ System used to build releases, either "mix" or "distillery".
 
     elixir_release_release_system: "mix"
 
-Location of app to get release files. By default, it assumes that you have an `ansible` directory
+Location to get release files. By default, it assumes that you have an `ansible` directory
 in your app source
 
     elixir_release_src_dir: "{{ role_path }}/../../.."
