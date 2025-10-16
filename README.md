@@ -178,13 +178,21 @@ Base directory for deploy files:
 
 Directories under deploy dir.
 
-Where release tarballs are unpacked:
+Base directory release tarballs are unpacked:
 
     elixir_release_releases_dir: "{{ elixir_release_deploy_dir }}/releases"
+
+Name of target directory under releases:
+
+    elixir_release_target_dir: <timestamp>
+
+If `elixir_release_target_dir` is not defined, a timestamp will be generated like `20240603T072116`.
+You can use this to name the directory something more meaningful, e.g. a version string or build number.
 
 Currently running release (symlink):
 
     elixir_release_current_dir: "{{ elixir_release_deploy_dir }}/current"
+
 
 Location of deploy scripts:
 
