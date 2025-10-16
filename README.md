@@ -193,7 +193,6 @@ Currently running release (symlink):
 
     elixir_release_current_dir: "{{ elixir_release_deploy_dir }}/current"
 
-
 Location of deploy scripts:
 
     elixir_release_scripts_dir: "{{ elixir_release_deploy_dir }}/bin"
