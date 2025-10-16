@@ -108,7 +108,7 @@ System used to build releases, either "mix" or "distillery".
 Location of app to get release files. By default, it assumes that you have an `ansible` directory
 in your app source
 
-    elixir_release_app_dir: "{{ role_path }}/../../.."
+    elixir_release_src_dir: "{{ role_path }}/../../.."
 
 Erlang name of the application, used to by Distillery to name directories
 and scripts.
