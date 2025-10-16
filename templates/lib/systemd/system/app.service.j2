@@ -23,6 +23,24 @@ Environment=RELEASE_MUTABLE_DIR={{ elixir_release_runtime_dir }}
 Environment=RELEASE_TMP={{ elixir_release_runtime_dir }}
 {% endif %}
 # Environment=PORT={{ elixir_release_http_listen_port }}
+{% if 'runtime' in elixir_release_app_dirs %}
+Environment=RUNTIME_DIR={{ elixir_release_runtime_dir }}
+{% endif %}
+{% if 'configuration' in elixir_release_app_dirs %}
+Environment=CONFIGURATION_DIR={{ elixir_release_configuration_dir }}
+{% endif %}
+{% if 'logs' in elixir_release_app_dirs %}
+Environment=LOGS_DIR={{ elixir_release_logs_dir }}
+{% endif %}
+{% if 'state' in elixir_release_app_dirs %}
+Environment=STATE_DIR={{ elixir_release_state_dir }}
+{% endif %}
+{% if 'cache' in elixir_release_app_dirs %}
+Environment=CACHE_DIR={{ elixir_release_cache_dir }}
+{% endif %}
+{% if 'tmp' in elixir_release_app_dirs %}
+Environment=TMP_DIR={{ elixir_release_tmp_dir }}
+{% endif %}
 {% if elixir_release_conform %}
 Environment=CONFORM_CONF_PATH={{ elixir_release_conform_conf_path }}
 {% endif %}
