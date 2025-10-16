@@ -1,0 +1,10 @@
+---
+- name: Copy libs
+  copy:
+    src: "{{ item }}"
+    dest: "{{ elixir_release_lib_dir }}"
+    owner: "{{ elixir_release_deploy_user }}"
+    group: "{{ elixir_release_app_group }}"
+    mode: 0750
+  with_fileglob:
+    - "{{ elixir_release_src_dir }}/lib/*"

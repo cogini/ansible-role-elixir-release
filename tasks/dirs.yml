@@ -10,6 +10,7 @@
     - "{{ elixir_release_deploy_dir }}"
     - "{{ elixir_release_releases_dir }}"
     - "{{ elixir_release_scripts_dir }}"
+    - "{{ elixir_release_lib_dir }}"
 
 - name: Create flags dir for systemd
   file: path={{ elixir_release_shutdown_flags_dir }} state=directory owner={{ elixir_release_deploy_user }} group={{ elixir_release_app_group }} mode=0700

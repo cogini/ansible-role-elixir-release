@@ -54,6 +54,8 @@ elixir_release_releases_dir: "{{ elixir_release_deploy_dir }}/releases"
 elixir_release_current_dir: "{{ elixir_release_deploy_dir }}/current"
 # Location of deploy scripts
 elixir_release_scripts_dir: "{{ elixir_release_deploy_dir }}/bin"
+# Location of release override libs
+elixir_release_lib_dir: "{{ elixir_release_deploy_dir }}/lib"
 # Flag file dir, used to signal restart
 elixir_release_flags_dir: "{{ elixir_release_deploy_dir }}/flags"
 
