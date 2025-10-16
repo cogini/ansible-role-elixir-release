@@ -37,6 +37,15 @@ elixir_release_app_group: "{{ elixir_release_app_user }}"
 # App release environment
 elixir_release_mix_env: prod
 
+# Source build dir
+elixir_release_build_dir: "{{ elixir_release_src_dir }}/_build/{{ elixir_release_mix_env }}"
+
+# Source dir for release files
+elixir_release_src_releases_dir: "{{ elixir_release_build_dir }}/rel/{{ elixir_release_release_name }}/releases"
+
+# Source dir for systemd files
+elixir_release_src_systemd_dir: "{{ elixir_release_build_dir }}/systemd/lib/systemd/system"
+
 # HTTP listen port
 elixir_release_http_listen_port: 4000
 elixir_release_https_listen_port: 4001

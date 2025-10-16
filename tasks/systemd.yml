@@ -68,11 +68,6 @@
   when: elixir_release_systemd_source == 'self'
 
 - block:
-    - name: Set vars
-      set_fact:
-        # Location on local filesystem of release files
-        elixir_release_build_dir: "{{ elixir_release_src_dir }}/_build/{{ elixir_release_mix_env }}"
-
     - name: Copy systemd unit files from release
       copy:
         src: "{{ item }}"
@@ -81,12 +76,12 @@
         group: "root"
         mode: 0600
       with_fileglob:
-        - "{{ elixir_release_build_dir }}/systemd/lib/systemd/system/*"
+        - "{{ elixir_release_src_systemd_dir }}/*"
 
     - name: Enable systemd unit files from release
       service:
         name: "{{ item | basename }}"
         enabled: true
       with_fileglob:
-        - "{{ elixir_release_build_dir }}/systemd/lib/systemd/system/*"
+        - "{{ elixir_release_src_systemd_dir }}/*"
   when: elixir_release_systemd_source == 'mix_systemd'

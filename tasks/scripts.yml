@@ -1,10 +1,5 @@
 # tasks file for elixir-release/scripts
 
-- name: Set vars
-  set_fact:
-    # Location on local filesystem of release files
-    elixir_release_build_dir: "{{ elixir_release_src_dir }}/_build/{{ elixir_release_mix_env }}"
-
 - name: Create remote_console.sh
   template:
     src: scripts/remote_console.sh.j2
