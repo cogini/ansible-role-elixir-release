@@ -31,7 +31,7 @@ Environment={{ env }}
 {% endfor %}
 EnvironmentFile=-{{ elixir_release_current_dir }}/etc/environment
 EnvironmentFile=-{{ elixir_release_deploy_dir }}/etc/environment
-{% if 'configuration' in dirs %}
+{% if 'configuration' in elixir_release_app_dirs %}
 EnvironmentFile=-{{ elixir_release_configuration_dir }}/environment
 {% endif %}
 EnvironmentFile=-{{ elixir_release_runtime_dir }}/runtime-environment
