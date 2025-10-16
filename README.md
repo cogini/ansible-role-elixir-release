@@ -68,9 +68,10 @@ A more heaviliy customized playbook:
       become: true
       vars:
         elixir_release_app_name: foo
-        elixir_release_app_user: bar
+        elixir_release_app_user: foo
         elixir_release_deploy_user: deploy
-        elixir_release_mix_env: public
+        elixir_release_mix_env: prod
+        elixir_release_release_name: "{{ elixir_release_mix_env }}"
         elixir_release_base_dir: /opt/bar
         elixir_release_app_dirs:
           - configuration
@@ -79,8 +80,8 @@ A more heaviliy customized playbook:
           - tmp
           - state
           - cache
-        elixir_release_tmp_directory_base: /var/tmp/bar
-        elixir_release_state_directory_base: /var/bar
+        elixir_release_tmp_directory_base: /var/tmp/foo
+        elixir_release_state_directory_base: /var/lib/foo
         elixir_release_http_listen_port: 8080
         elixir_release_cache_directory_mode: 0700
         elixir_release_configuration_directory_mode: 0755
